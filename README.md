@@ -1,2 +1,2 @@
 # JSON-data-cleaning
-This is the transform step of a ETL process
+This is the transform step of an ETL process
