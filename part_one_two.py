@@ -13,9 +13,31 @@ with open(Path('raw_reviews.json'), 'r') as f:
     
 class Solution:
     
-    def data_cleansing (self, myFile):
+    def data_cleansing (self, data):
         app_type={'airbnb':'Personalization','experian':'Financial','duolingo':'gamification', 'nike':'Personalization'}
         # create a list of final columns
+        pat1=re.compile(u"(\u2018|\u2019)") # single quote
+        pat2=re.compile(u"(\u201c|\u201d)") # double quote
+        pat3=re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pic
+        u"\U0001F680-\U0001F6FF"  # transport & map 
+        u"\U0001F1E0-\U0001F1FF"  # flags
+        u"\U00002500-\U00002BEF"  # chinese char
+        u"\U00002702-\U000027B0"
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642" 
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+                      "]+", re.UNICODE)
         for record in data:
             try:
                 if bool(record['user_nickname'])==False:
@@ -34,6 +56,10 @@ class Solution:
                 record['syndication_flag']=record['syndication_flag'].lower() in ("yes", "true", "t", "1")
             except:
                 pass
+            record['review_text']=re.sub(pat1, "'", record['review_text'])
+            record['review_text']=re.sub(pat2, '"', record['review_text'])
+            record['review_text']=re.sub(pat3, ' ', record['review_text'])
+
             record['review_text_len']=len(record['review_text'])
             record['processed_flag']=True # indicate the completion of data transformation
             record.pop('developer_response_text', None)
